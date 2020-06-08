@@ -32,13 +32,13 @@ class ViewController: UIViewController {
         view.addSubview(titleLabel)
         
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-        titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 20).isActive = true
+        titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Layout.padding).isActive = true
+        titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: Layout.padding).isActive = true
         
         view.addSubview(button)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        button.topAnchor.constraint(equalTo: view.topAnchor, constant: 20).isActive = true
+        button.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Layout.padding).isActive = true
+        button.topAnchor.constraint(equalTo: view.topAnchor, constant: Layout.padding).isActive = true
     }
     
     @objc private func buttonAction(_ sender: UIButton) {
@@ -46,3 +46,6 @@ class ViewController: UIViewController {
     }
 }
 
+private enum Layout {
+    static let padding: CGFloat = 24.0
+}
