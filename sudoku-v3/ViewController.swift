@@ -14,7 +14,7 @@ final class ViewController: UIViewController {
 
     // MARK: Properties
     
-    private lazy var button: UIButton = {
+    private lazy var buttonScan: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Scan", for: .normal)
@@ -62,20 +62,20 @@ final class ViewController: UIViewController {
     
     private func setupConstraints() {
         
-        view.addSubview(button)
+        view.addSubview(buttonScan)
         view.addSubview(ocrTextView)
         view.addSubview(scanImageView)
         
         let padding: CGFloat = 16.0
         NSLayoutConstraint.activate([
-        button.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: padding),
-        button.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -padding),
-        button.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -padding),
-        button.heightAnchor.constraint(equalToConstant: 50),
+        buttonScan.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: padding),
+        buttonScan.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -padding),
+        buttonScan.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -padding),
+        buttonScan.heightAnchor.constraint(equalToConstant: 50),
             
         ocrTextView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: padding),
         ocrTextView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -padding),
-        ocrTextView.bottomAnchor.constraint(equalTo: button.topAnchor, constant: -padding),
+        ocrTextView.bottomAnchor.constraint(equalTo: buttonScan.topAnchor, constant: -padding),
         ocrTextView.heightAnchor.constraint(equalToConstant: 200),
             
         scanImageView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: padding),
@@ -98,7 +98,7 @@ final class ViewController: UIViewController {
         guard let cgImage = image.cgImage else { return }
 
         ocrTextView.text = ""
-        button.isEnabled = false
+        buttonScan.isEnabled = false
         
         let requestHandler = VNImageRequestHandler(cgImage: cgImage, options: [:])
         do {
@@ -121,7 +121,7 @@ final class ViewController: UIViewController {
             
             DispatchQueue.main.async {
                 self.ocrTextView.text = ocrText
-                self.button.isEnabled = true
+                self.buttonScan.isEnabled = true
             }
         }
         
