@@ -11,10 +11,91 @@ import Vision
 import VisionKit
 
 final class ViewController: UIViewController {
-
-    // MARK: Properties
     
-    private lazy var buttonScan: UIButton = {
+    // MARK: - Outlets
+    
+    @IBOutlet private weak var buttonScan: UIButton?
+    @IBOutlet private weak var ocrTextView: UITextView?
+    
+    // MARK: - Properties
+    
+    private lazy var ocrRequest = VNRecognizeTextRequest(completionHandler: nil)
+    
+    
+    // MARK: - Methods
+    
+    @IBAction func tapScan(_ sender: UIButton) {
+        
+        processImage()
+//        guard VNDocumentCameraViewController.isSupported else { return }
+//
+//        let controller = VNDocumentCameraViewController()
+//        controller.delegate = self
+//
+//        present(controller, animated: true)
+    }
+    
+    private func processImage() {
+        
+        // Get the CGImage on which to perform requests.
+        guard let cgImage = UIImage(named: "Puzzle 1")?.cgImage else { return }
+
+        // Create a new image-request handler.
+        let requestHandler = VNImageRequestHandler(cgImage: cgImage)
+
+        do {
+            // Perform the text-recognition request.
+            try requestHandler.perform([self.ocrRequest])
+        } catch {
+            print("Unable to perform the requests: \(error).")
+        }
+    }
+    
+    private func configureOCR() {
+        ocrRequest = VNRecognizeTextRequest { (request, error) in
+            guard let observations = request.results as? [VNRecognizedTextObservation] else { return }
+            
+            var ocrText = ""
+            for observation in observations {
+                guard let topCandidate = observation.topCandidates(1).first else { return }
+                
+                ocrText += topCandidate.string + "\n"
+            }
+            
+            DispatchQueue.main.async {
+                self.ocrTextView?.text = ocrText
+            }
+        }
+        
+        ocrRequest.recognitionLevel = .accurate
+        ocrRequest.recognitionLanguages = ["en-US", "en-GB"]
+        ocrRequest.usesLanguageCorrection = true
+    }
+}
+
+
+// MARK: VisionKit delegate
+
+extension ViewController: VNDocumentCameraViewControllerDelegate {
+    func documentCameraViewController(_ controller: VNDocumentCameraViewController, didFinishWith scan: VNDocumentCameraScan) {
+        guard scan.pageCount >= 1 else {
+            controller.dismiss(animated: true)
+            return
+        }
+        
+        // save scan
+        controller.dismiss(animated: true)
+    }
+    
+    func documentCameraViewControllerDidCancel(_ controller: VNDocumentCameraViewController) {
+        dismiss(animated: true, completion: nil)
+    }
+}
+
+    
+    // MARK: Properties
+    /*
+    private lazy var button: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Scan", for: .normal)
@@ -62,20 +143,20 @@ final class ViewController: UIViewController {
     
     private func setupConstraints() {
         
-        view.addSubview(buttonScan)
+        view.addSubview(button)
         view.addSubview(ocrTextView)
         view.addSubview(scanImageView)
         
         let padding: CGFloat = 16.0
         NSLayoutConstraint.activate([
-        buttonScan.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: padding),
-        buttonScan.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -padding),
-        buttonScan.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -padding),
-        buttonScan.heightAnchor.constraint(equalToConstant: 50),
+        button.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: padding),
+        button.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -padding),
+        button.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -padding),
+        button.heightAnchor.constraint(equalToConstant: 50),
             
         ocrTextView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: padding),
         ocrTextView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -padding),
-        ocrTextView.bottomAnchor.constraint(equalTo: buttonScan.topAnchor, constant: -padding),
+        ocrTextView.bottomAnchor.constraint(equalTo: button.topAnchor, constant: -padding),
         ocrTextView.heightAnchor.constraint(equalToConstant: 200),
             
         scanImageView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: padding),
@@ -98,7 +179,7 @@ final class ViewController: UIViewController {
         guard let cgImage = image.cgImage else { return }
 
         ocrTextView.text = ""
-        buttonScan.isEnabled = false
+        button.isEnabled = false
         
         let requestHandler = VNImageRequestHandler(cgImage: cgImage, options: [:])
         do {
@@ -121,7 +202,7 @@ final class ViewController: UIViewController {
             
             DispatchQueue.main.async {
                 self.ocrTextView.text = ocrText
-                self.buttonScan.isEnabled = true
+                self.button.isEnabled = true
             }
         }
         
@@ -130,6 +211,7 @@ final class ViewController: UIViewController {
         ocrRequest.usesLanguageCorrection = true
     }
 }
+
 
 // MARK: VisionKit delegate
 
@@ -154,3 +236,4 @@ extension ViewController: VNDocumentCameraViewControllerDelegate {
 private enum Layout {
     static let padding: CGFloat = 24.0
 }
+*/
